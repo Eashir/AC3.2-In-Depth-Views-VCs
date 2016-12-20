@@ -10,46 +10,75 @@ import UIKit
 
 class ViewController: UIViewController {
     //Makes and keeps reference to button itself, so like outlet
-    var segueButton: UIButton = UIButton(type: UIButtonType.system)
-    var randomLazyView: LazyView = LazyView()
-
+    var drawCardButton: UIButton = UIButton(type: UIButtonType.system)
+    var cardView: UIView = UIView()
+    var cardLabel: UILabel = UILabel()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        cardView.isHidden = false
+        cardView.backgroundColor = .lightGray
+        
+        cardView.layer.borderWidth = 1
+        cardView.layer.borderColor = UIColor.black.cgColor
+        
+        cardView.layer.cornerRadius = 8.0
+        cardView.clipsToBounds = true
         
         print("\n\n\n>>>>View DID LOAD \n\n\n")
-        self.view.backgroundColor = .blue
+        self.view.backgroundColor = .white
         
-        print("Button frame, viewDidLoad, post adding constraints: \(segueButton.frame)")
+        print("Button frame, viewDidLoad, post adding constraints: \(drawCardButton.frame)")
         
-        self.view.addSubview(segueButton)
-        self.view.addSubview(randomLazyView)
-        self.segueButton.translatesAutoresizingMaskIntoConstraints = false
-        self.segueButton.setTitle("PRESS ME", for: .normal)
-        //Always need 2 constraints x & y
-        //Button intrinsic size is text plus a bqxit of padding on each side
-        let _ = [segueButton.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            segueButton.centerYAnchor.constraint(equalTo: self.view.centerYAnchor)
-        ].map { $0.isActive = true }
+        self.view.addSubview(drawCardButton)
+        self.view.addSubview(cardView)
         
-        self.segueButton.addTarget(self, action: #selector(didPressSegueButton(sender:)), for: .touchUpInside)
+        self.drawCardButton.translatesAutoresizingMaskIntoConstraints = false
+        self.cardView.translatesAutoresizingMaskIntoConstraints = false
+        
+        self.drawCardButton.setTitle("Draw Card", for: .normal)
+        
+        
+        let cardLabelConstraints = [
+            cardLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor),
+            cardLabel.topAnchor.constraint(equalTo: cardView.topAnchor)
+        
+        ]
+        
+        let drawCardButtonConstraints = [
+            drawCardButton.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            drawCardButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+        ]
+        
+        let cardViewConstraints = [
+            cardView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            cardView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            cardView.heightAnchor.constraint(equalToConstant: 500.0),
+            cardView.widthAnchor.constraint(equalToConstant: 300.0)
+        ]
+        
+        let _ = [drawCardButtonConstraints, cardViewConstraints].map{ $0.map{ $0.isActive = true } }
+
+        
+        self.drawCardButton.addTarget(self, action: #selector(didPressDrawCardButton(sender:)), for: .touchUpInside)
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
         print("\n\n\n>>>>Did LAYOUT SUBVIEWS \n\n\n")
-        print("Button frame, didLayoutSubviews, constraints: \(segueButton.frame)")
+        print("Button frame, didLayoutSubviews, constraints: \(drawCardButton.frame)")
     }
-    func didPressSegueButton(sender: UIButton) {
+    func didPressDrawCardButton(sender: UIButton) {
         print("Did press button")
         
         //1. Create our destination VC
         let randomLovelyViewController = ViewController()
-        randomLovelyViewController.view.backgroundColor = self.randomColor()
+        randomLovelyViewController.view.backgroundColor = randomColor()
         
         //2. Move to the destination VC
         //This will push a new VC modally
-        //self.present(greenViewController, anim ted: true, completion: nil)
+        //self.present(greenViewController, animated: true, completion: nil)
         
         //but we want the nacVC to manage our VCs!
         if let navVC = self.navigationController {
